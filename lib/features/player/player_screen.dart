@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:popbash/core/audio/audio_player_service.dart';
+import 'package:popbash/core/theme/settings_service.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({super.key});
@@ -28,6 +29,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Widget _buildPlayer() {
     final song = _audioService.currentSong!;
+    final primaryColor = SettingsService().primaryColorNotifier.value;
     
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -40,19 +42,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    r'''
+                  ValueListenableBuilder<String>(
+                    valueListenable: SettingsService().customAsciiNotifier,
+                    builder: (context, ascii, _) {
+                      final logo = ascii.isNotEmpty ? ascii : r'''
    _  _  ___  __  __   _   ___   _  _ 
   | || |/ _ \|  \/  | /_\ |   \ | || |
   | __ | (_) | |\/| |/ _ \| |) || __ |
   |_||_|\___/|_|  |_/_/ \_\___/ |_||_|
-                    ''',
-                    style: TextStyle(color: Color(0xFFCBA6F7), fontSize: 12),
+                    ''';
+                      return Text(
+                        logo,
+                        style: TextStyle(color: primaryColor, fontSize: 12),
+                        textAlign: TextAlign.center,
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
                   Text(
                     song.title,
-                    style: const TextStyle(color: Color(0xFF89B4FA), fontWeight: FontWeight.bold, fontSize: 18),
+                    style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                   Text(
@@ -74,7 +83,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('> FILE: ${song.data.split('/').last}', style: const TextStyle(fontSize: 10, color: Color(0xFF6C7086))),
-                Text('> CODEC: MP3/FLAC  BITRATE: ${(song.size ?? 0) ~/ 1024} kb', style: const TextStyle(fontSize: 10, color: Color(0xFF6C7086))),
+                Text('> CODEC: MP3/FLAC  BITRATE: ${song.size ~/ 1024} kb', style: const TextStyle(fontSize: 10, color: Color(0xFF6C7086))),
               ],
             ),
           ),
@@ -106,12 +115,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
               return Column(
                 children: [
-                  Text(bar, style: const TextStyle(color: Color(0xFFA6E3A1), letterSpacing: 2)),
+                  Text(bar, style: TextStyle(color: primaryColor, letterSpacing: 2)),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_formatDuration(position), style: const TextStyle(color: Color(0xFFA6E3A1))),
+                      Text(_formatDuration(position), style: TextStyle(color: primaryColor)),
                       Text(_formatDuration(duration), style: const TextStyle(color: Color(0xFFF38BA8))),
                     ],
                   ),
@@ -129,20 +138,20 @@ class _PlayerScreenState extends State<PlayerScreen> {
               _buildCliButton('[PREV]', () async {
                 await _audioService.previous();
                 setState(() {});
-              }),
+              }, primaryColor: primaryColor),
               StreamBuilder<bool>(
                 stream: _audioService.player.playingStream,
                 builder: (context, snapshot) {
                   final isPlaying = snapshot.data ?? false;
                   return _buildCliButton(isPlaying ? '[PAUSE]' : '[PLAY]', () {
                     _audioService.togglePlayPause();
-                  }, highlight: true);
+                  }, highlight: true, primaryColor: primaryColor);
                 },
               ),
               _buildCliButton('[NEXT]', () async {
                 await _audioService.next();
                 setState(() {});
-              }),
+              }, primaryColor: primaryColor),
             ],
           ),
           const SizedBox(height: 16),
@@ -151,19 +160,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
-  Widget _buildCliButton(String text, VoidCallback onTap, {bool highlight = false}) {
+  Widget _buildCliButton(String text, VoidCallback onTap, {bool highlight = false, required Color primaryColor}) {
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: highlight ? const Color(0xFFCBA6F7) : Colors.transparent,
-          border: Border.all(color: const Color(0xFFCBA6F7)),
+          color: highlight ? primaryColor : Colors.transparent,
+          border: Border.all(color: primaryColor),
         ),
         child: Text(
           text,
           style: TextStyle(
-            color: highlight ? const Color(0xFF1E1E2E) : const Color(0xFFCBA6F7),
+            color: highlight ? const Color(0xFF1E1E2E) : primaryColor,
             fontWeight: FontWeight.bold,
           ),
         ),

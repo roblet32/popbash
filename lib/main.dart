@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:popbash/features/shell/main_shell.dart';
+import 'package:popbash/core/theme/settings_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SettingsService().init();
   runApp(const PopBashApp());
 }
 
@@ -12,22 +15,27 @@ class PopBashApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Definimos un tema oscuro estilo terminal (basado en colores Catppuccin)
-    return MaterialApp(
-      title: 'PopBash',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF1E1E2E), // Fondo oscuro profundo
-        // Configuración de la tipografía base usando Google Fonts (Monoespaciada)
-        textTheme: GoogleFonts.firaCodeTextTheme(
-          Theme.of(context).textTheme.apply(
-            bodyColor: const Color(0xFFA6E3A1), // Texto verde estilo hacker
-            displayColor: const Color(0xFFA6E3A1),
+    return ValueListenableBuilder<Color>(
+      valueListenable: SettingsService().primaryColorNotifier,
+      builder: (context, primaryColor, child) {
+        return MaterialApp(
+          title: 'PopBash',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: const Color(0xFF1E1E2E), // Fondo oscuro profundo
+            // Configuración de la tipografía base usando Google Fonts (Monoespaciada)
+            textTheme: GoogleFonts.firaCodeTextTheme(
+              Theme.of(context).textTheme.apply(
+                bodyColor: primaryColor,
+                displayColor: primaryColor,
+              ),
+            ),
+            useMaterial3: true,
           ),
-        ),
-        useMaterial3: true,
-      ),
-      home: const MainTerminalScreen(),
+          home: const MainTerminalScreen(),
+        );
+      },
     );
   }
 }

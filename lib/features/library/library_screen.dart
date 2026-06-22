@@ -95,7 +95,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             itemBuilder: (context, index) {
               final song = songs[index];
               // Simular salida de 'ls -l' (Permisos, Usuario, Tamaño/Bitrate, Nombre)
-              final sizeMb = ((song.size ?? 0) / (1024 * 1024)).toStringAsFixed(1);
+              final sizeMb = (song.size / (1024 * 1024)).toStringAsFixed(1);
               final timeStr = _formatDuration(song.duration);
 
               return InkWell(

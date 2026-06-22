@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
@@ -22,7 +23,7 @@ class AudioPlayerService {
       await player.setAudioSource(AudioSource.uri(Uri.parse('file://${song.data}')));
       player.play();
     } catch (e) {
-      print("[ERROR] Could not play audio: $e");
+      debugPrint("[ERROR] Could not play audio: $e");
     }
   }
 

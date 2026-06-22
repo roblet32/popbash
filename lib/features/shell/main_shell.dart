@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:popbash/features/library/library_screen.dart';
 import 'package:popbash/features/player/player_screen.dart';
+import 'package:popbash/features/config/config_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -24,7 +25,7 @@ class _MainShellState extends State<MainShell> {
       },
     ),
     const PlayerScreen(),
-    _buildPlaceholderScreen('~/config', 'User configuration file\nTheme: hacker_dark\nAutoplay: true'),
+    const ConfigScreen(),
   ];
 
   static Widget _buildPlaceholderScreen(String path, String content) {
